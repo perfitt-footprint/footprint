@@ -1,10 +1,10 @@
-type TSignErrorMessageProps = {
+type TAuthErrorMessageProps = {
   message?: string;
   className?: string;
 };
 
-const SignErrorMessage = ({ message, className }: TSignErrorMessageProps) => {
+const AuthErrorMessage = ({ message, className }: TAuthErrorMessageProps) => {
   return <div className={`text-[13px] leading-4 text-[#EF4444] ${className}`}>{message}</div>;
 };
 
-export default SignErrorMessage;
+export default AuthErrorMessage;

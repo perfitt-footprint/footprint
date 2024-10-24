@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
 import { Controller, useFormContext, useWatch } from 'react-hook-form';
-import SignInputField from '../SignInputField';
-import SignInput from '../SignInput';
-import SignSelect from '../SignSelect';
+import AuthInputField from '../../auth/form/AuthInputField';
+import AuthInput from '../../auth/form/AuthInput';
+import AuthSelect from '../../auth/form/AuthSelect';
 
-function SUInfoBasic() {
+function SUInfoBasic({ isGoogleUser }: { isGoogleUser: boolean }) {
   const {
     control,
     formState: { errors },
@@ -31,7 +31,7 @@ function SUInfoBasic() {
   return (
     <>
       {/* 아이디 */}
-      <SignInputField
+      <AuthInputField
         title='아이디'
         htmlFor='email'
         errorMessage={errors.email?.message as string}
@@ -47,57 +47,60 @@ function SUInfoBasic() {
             },
           }}
           render={({ field }) => (
-            <SignInput
+            <AuthInput
               type='email'
               {...field}
               id={field.name}
               placeholder='이메일을 입력해 주세요'
               onChange={e => field.onChange(e.target.value)}
               autoComplete='email'
+              disabled={isGoogleUser}
             />
           )}
         />
-      </SignInputField>
+      </AuthInputField>
 
       {/* 비밀번호 */}
-      <SignInputField
-        title='비밀번호'
-        htmlFor='password'
-        errorMessage={errors.password?.message as string}
-      >
-        <Controller
-          name='password'
-          control={control}
-          rules={{
-            required: '* 비밀번호를 입력해 주세요',
-            minLength: {
-              value: 8,
-              message: '* 비밀번호는 최소 8자 이상이어야 합니다.',
-            },
-            maxLength: {
-              value: 30,
-              message: '* 비밀번호는 최대 30자 이하여야 합니다.',
-            },
-            pattern: {
-              value: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*]).+$/,
-              message: '* 영문 대소문자, 숫자, 특수문자를 포함하여야 합니다.',
-            },
-          }}
-          render={({ field }) => (
-            <SignInput
-              type='password'
-              {...field}
-              id={field.name}
-              placeholder='비밀번호를 입력해 주세요'
-              onChange={e => field.onChange(e.target.value)}
-              autoComplete='current-password'
-            />
-          )}
-        />
-      </SignInputField>
+      {!isGoogleUser && (
+        <AuthInputField
+          title='비밀번호'
+          htmlFor='password'
+          errorMessage={errors.password?.message as string}
+        >
+          <Controller
+            name='password'
+            control={control}
+            rules={{
+              required: '* 비밀번호를 입력해 주세요',
+              minLength: {
+                value: 8,
+                message: '* 비밀번호는 최소 8자 이상이어야 합니다.',
+              },
+              maxLength: {
+                value: 30,
+                message: '* 비밀번호는 최대 30자 이하여야 합니다.',
+              },
+              pattern: {
+                value: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*]).+$/,
+                message: '* 영문 대소문자, 숫자, 특수문자를 포함하여야 합니다.',
+              },
+            }}
+            render={({ field }) => (
+              <AuthInput
+                type='password'
+                {...field}
+                id={field.name}
+                placeholder='비밀번호를 입력해 주세요'
+                onChange={e => field.onChange(e.target.value)}
+                autoComplete='current-password'
+              />
+            )}
+          />
+        </AuthInputField>
+      )}
 
       {/* 이름 */}
-      <SignInputField
+      <AuthInputField
         title='이름'
         htmlFor='name'
         errorMessage={errors.name?.message as string}
@@ -121,7 +124,7 @@ function SUInfoBasic() {
             },
           }}
           render={({ field }) => (
-            <SignInput
+            <AuthInput
               type='text'
               {...field}
               id={field.name}
@@ -130,10 +133,10 @@ function SUInfoBasic() {
             />
           )}
         />
-      </SignInputField>
+      </AuthInputField>
 
       {/* 성별 */}
-      <SignInputField
+      <AuthInputField
         title='성별'
         htmlFor='gender'
         errorMessage={errors.gender?.message as string}
@@ -143,7 +146,7 @@ function SUInfoBasic() {
           control={control}
           rules={{ required: '* 성별을 선택해 주세요' }}
           render={({ field }) => (
-            <SignSelect
+            <AuthSelect
               {...field}
               id={field.name}
               options={[
@@ -155,10 +158,10 @@ function SUInfoBasic() {
             />
           )}
         />
-      </SignInputField>
+      </AuthInputField>
 
       {/* 생년월일 */}
-      <SignInputField
+      <AuthInputField
         title='생년월일'
         htmlFor='birth'
         errorMessage={
@@ -173,7 +176,7 @@ function SUInfoBasic() {
             control={control}
             rules={{ required: '* 생년월일을 선택해 주세요.' }}
             render={({ field }) => (
-              <SignSelect
+              <AuthSelect
                 {...field}
                 id={field.name}
                 options={yearOptions}
@@ -187,7 +190,7 @@ function SUInfoBasic() {
             control={control}
             rules={{ required: '* 생년월일을 선택해 주세요.' }}
             render={({ field }) => (
-              <SignSelect
+              <AuthSelect
                 {...field}
                 id={field.name}
                 options={monthOptions}
@@ -201,7 +204,7 @@ function SUInfoBasic() {
             control={control}
             rules={{ required: '* 생년월일을 선택해 주세요.' }}
             render={({ field }) => (
-              <SignSelect
+              <AuthSelect
                 {...field}
                 id={field.name}
                 options={dayOptions}
@@ -211,7 +214,7 @@ function SUInfoBasic() {
             )}
           />
         </div>
-      </SignInputField>
+      </AuthInputField>
     </>
   );
 }

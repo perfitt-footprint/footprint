@@ -11,6 +11,7 @@ import Bridge from '../pages/Bridge';
 import ProtectedLayout from '../layout/ProtectedLayout';
 import MyPage from '../pages/mypage/MyPage';
 import MyItem from '../pages/mypage/MyItem';
+import AccountSettings from '../pages/AccountSettings';
 import ShoeRack from '../pages/shoerack/ShoeRack';
 import ShoesReviewEdit from '../pages/shoerack/ShoesReviewEdit';
 import ShoesReviewDetail from '../pages/shoerack/ShoesReviewDetail';
@@ -63,6 +64,10 @@ const router = createBrowserRouter([
           {
             path: '/mypage/item',
             element: <MyItem />,
+          },
+          {
+            path: '/account/settings/:mode',
+            element: <AccountSettings />,
           },
           {
             path: '/shoerack',
