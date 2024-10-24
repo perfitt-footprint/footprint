@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
-import SignInputField from '../SignInputField';
-import SUButton from './SUButton';
-import SignSelect from '../SignSelect';
+import AuthInputField from '../../auth/form/AuthInputField';
+import AuthSelectButton from '../../auth/form/AuthSelectButton';
+import AuthSelect from '../../auth/form/AuthSelect';
 import { infoIcon } from '../../../../assets/icons/icons';
 
 function SUInfoSize() {
@@ -47,20 +47,20 @@ function SUInfoSize() {
 
   return (
     <>
-      <SignInputField title='사이즈 타입'>
+      <AuthInputField title='사이즈 타입'>
         <div className='w-full flex gap-2'>
           {['mm', 'EU', 'US'].map(type => (
-            <SUButton
+            <AuthSelectButton
               key={type}
               isActive={sizeType === type}
               onClick={() => setSizeType(type)}
             >
               {type}
-            </SUButton>
+            </AuthSelectButton>
           ))}
         </div>
-      </SignInputField>
-      <SignInputField
+      </AuthInputField>
+      <AuthInputField
         title='평소 신는 스니커즈 사이즈'
         htmlFor='size'
       >
@@ -69,7 +69,7 @@ function SUInfoSize() {
           control={control}
           rules={{ required: '* 사이즈를 선택해 주세요.' }}
           render={({ field }) => (
-            <SignSelect
+            <AuthSelect
               {...field}
               id={field.name}
               options={sizeOptions}
@@ -78,7 +78,7 @@ function SUInfoSize() {
             />
           )}
         />
-      </SignInputField>
+      </AuthInputField>
       <div className='w-full p-4 flex gap-2 rounded-lg bg-blue-50'>
         <img
           src={infoIcon}

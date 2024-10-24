@@ -1,8 +1,8 @@
-type TSUButtonProps = React.ComponentPropsWithoutRef<'button'> & {
+type TAuthSelectButtonProps = React.ComponentPropsWithoutRef<'button'> & {
   isActive: boolean;
 };
 
-const SUButton = (props: TSUButtonProps) => {
+const AuthSelectButton = (props: TAuthSelectButtonProps) => {
   const { isActive, children, ...rest } = props;
 
   return (
@@ -17,4 +17,4 @@ const SUButton = (props: TSUButtonProps) => {
   );
 };
 
-export default SUButton;
+export default AuthSelectButton;

@@ -1,11 +1,7 @@
 // 마이 페이지
 
-// 로그인 안 했을 때 로그인 link
 // 프로필 사진 변경
-// 내 정보 수정 link 변경
-// 비밀번호 변경 link 변경
 // 고객센터 link 변경
-// 회원탈퇴
 
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -121,12 +117,12 @@ function MyPage() {
             <MPLinkButton
               title='내 정보 수정'
               imgAlt='Edit my infomation'
-              link='/'
+              link='/account/settings/profile'
             />
             <MPLinkButton
               title='비밀번호 변경'
               imgAlt='Change password'
-              link='/'
+              link='/account/settings/password'
             />
             <MPLinkButton
               title='고객센터'
@@ -141,7 +137,7 @@ function MyPage() {
           className='mt-6 flex justify-center gap-9 py-[30px]
             text-[14px] leading-[17px] text-[#808080] hover:underline'
         >
-          <button>회원탈퇴</button>
+          <button onClick={() => navigate('/account/settings/delete')}>회원탈퇴</button>
           {/* <button>고객약관</button> */}
         </div>
       </div>

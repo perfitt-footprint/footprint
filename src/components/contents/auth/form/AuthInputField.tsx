@@ -1,13 +1,13 @@
 import { ReactNode } from 'react';
-import SignErrorMessage from './SignErrorMessage';
+import AuthErrorMessage from './AuthErrorMessage';
 
-type TSignInputFieldProps = React.ComponentProps<'label'> & {
+type TAuthInputFieldProps = React.ComponentProps<'label'> & {
   title?: string;
   children: ReactNode;
   errorMessage?: string;
 };
 
-const SignInputField = (props: TSignInputFieldProps) => {
+const AuthInputField = (props: TAuthInputFieldProps) => {
   const { title, children, errorMessage, ...rest } = props;
   return (
     <div className='flex flex-col gap-1'>
@@ -18,9 +18,9 @@ const SignInputField = (props: TSignInputFieldProps) => {
         {title}
       </label>
       {children}
-      {errorMessage && <SignErrorMessage message={errorMessage} />}
+      {errorMessage && <AuthErrorMessage message={errorMessage} />}
     </div>
   );
 };
 
-export default SignInputField;
+export default AuthInputField;

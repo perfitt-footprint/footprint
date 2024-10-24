@@ -1,23 +1,29 @@
 // 회원가입
 
 // 구글 팝업 에러
+// 이메일 중복 검사
+// 공백 제거
+// 컴포넌트 분리
 
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FormProvider, useForm } from 'react-hook-form';
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { useForm } from 'react-hook-form';
+import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithCredential, updateProfile } from 'firebase/auth';
 import { auth } from '../../service/firebase';
 import { TUserInfo } from '../../types/sign';
 import { useSignStore } from '../../stores/sign.store';
 import { createUser } from '../../api/firebase/createUser';
-import SignContainer from '../../components/contents/sign/SignContainer';
+import AuthContainer from '../../components/contents/auth/form/AuthContainer';
 import SUInfoBasic from '../../components/contents/sign/signup/SUInfoBasic';
 import SUInfoSize from '../../components/contents/sign/signup/SUInfoSize';
 
 function SignUp() {
   const navigate = useNavigate();
   const [step, setStep] = useState<'basic' | 'size'>('basic');
-  const [uid, setUid] = useState('');
+  const [googleAuth, setGoogleAuth] = useState({
+    uid: '',
+    token: '',
+  });
   const { googleUser, setGoogleUser, setSignSheetOpen, setSignSheetBody } = useSignStore();
 
   const methods = useForm<TUserInfo>({
@@ -39,9 +45,10 @@ function SignUp() {
   // 구글 회원가입, 기본 정보 가져오기
   useEffect(() => {
     if (googleUser) {
-      setUid(googleUser.uid);
+      setGoogleAuth({ uid: googleUser.uid, token: googleUser.token || '' });
       methods.setValue('email', googleUser.email);
       methods.setValue('name', googleUser.name);
+      methods.setValue('profile', googleUser.profile);
       setGoogleUser(undefined);
     }
   }, [googleUser]);
@@ -63,15 +70,31 @@ function SignUp() {
 
   // Click Button
   const handleSubmit = async (data: TUserInfo) => {
-    if (step === 'basic') setStep('size');
-    else {
+    if (step === 'basic') {
+      // 1. step = basic, 이메일 중복 검사
+      // const signInMethods = await fetchSignInMethodsForEmail(auth, data.email);
+      // if (signInMethods.length === 0) {
+      setStep('size');
+      // } else {
+      //   methods.setError('email', {
+      //     type: 'manual',
+      //     message: '* 해당 이메일은 이미 등록되어 있습니다.',
+      //   });
+      // }
+    } else {
+      // 2. step = size, 회원가입
       try {
-        if (!googleUser) {
+        if (!googleAuth.uid) {
           // 이메일 회원가입
           const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
           await updateProfile(userCredential.user, { displayName: data.name });
           signUp(userCredential.user.uid, data);
-        } else signUp(uid, data); // 구글 회원가입
+        } else {
+          // 구글 회원가입
+          const googleCredential = GoogleAuthProvider.credential(googleAuth.token);
+          await signInWithCredential(auth, googleCredential);
+          signUp(googleAuth.uid, data);
+        }
       } catch (error) {
         console.log('Failed Sign Up: ', error);
         setSignSheetOpen(false);
@@ -83,18 +106,17 @@ function SignUp() {
   };
 
   return (
-    <FormProvider {...methods}>
-      <SignContainer
-        title='회원가입'
-        handleSubmit={methods.handleSubmit(handleSubmit)}
-        btnText={step === 'basic' ? '다음' : '가입 완료'}
-        formClassName={step === 'size' ? 'gap-6' : ''}
-        errorMessage={step === 'size' ? (errors.size?.message as string) : undefined}
-      >
-        {step === 'basic' && <SUInfoBasic />}
-        {step === 'size' && <SUInfoSize />}
-      </SignContainer>
-    </FormProvider>
+    <AuthContainer
+      title='회원가입'
+      methods={methods}
+      handleSubmit={methods.handleSubmit(handleSubmit)}
+      btnText={step === 'basic' ? '다음' : '가입 완료'}
+      formClassName={step === 'size' ? 'gap-6' : ''}
+      errorMessage={step === 'size' ? (errors.size?.message as string) : undefined}
+    >
+      {step === 'basic' && <SUInfoBasic isGoogleUser={!!googleAuth.uid} />}
+      {step === 'size' && <SUInfoSize />}
+    </AuthContainer>
   );
 }
 

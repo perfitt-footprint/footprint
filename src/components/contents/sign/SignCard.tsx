@@ -30,11 +30,15 @@ const SignCard = () => {
 
     try {
       const userCredential = await signInWithPopup(auth, googleProvider);
+      const credential = GoogleAuthProvider.credentialFromResult(userCredential);
+      const token = credential?.idToken;
       const user = userCredential.user;
       setGoogleUser({
         uid: user.uid,
+        token: token || '',
         email: user.email || '',
         name: user.displayName || '',
+        profile: user.photoURL || '',
       });
 
       const userData = await getUser(user.uid);

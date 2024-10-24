@@ -2,26 +2,34 @@
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Controller, useForm } from 'react-hook-form';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../service/firebase';
 import { useSignStore } from '../../stores/sign.store';
-import SignContainer from '../../components/contents/sign/SignContainer';
-import SignInputField from '../../components/contents/sign/SignInputField';
-import SignInput from '../../components/contents/sign/SignInput';
+import { TUserInfoBasic } from '../../types/sign';
+import AuthContainer from '../../components/contents/auth/form/AuthContainer';
+import AuthInputField from '../../components/contents/auth/form/AuthInputField';
+import AuthInput from '../../components/contents/auth/form/AuthInput';
 
 function SignIn() {
   const navigate = useNavigate();
   const { setSignSheetOpen } = useSignStore();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const methods = useForm<TUserInfoBasic>({
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
+  const {
+    control,
+    formState: { errors },
+  } = methods;
   const [errorMessage, setErrorMessage] = useState('');
 
   // 로그인
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const handleSubmit = async (data: TUserInfoBasic) => {
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
       const user = userCredential.user;
       if (user) {
         setSignSheetOpen(false);
@@ -51,39 +59,56 @@ function SignIn() {
   };
 
   return (
-    <SignContainer
+    <AuthContainer
       title='로그인'
-      handleSubmit={handleSubmit}
+      methods={methods}
+      handleSubmit={methods.handleSubmit(handleSubmit)}
       errorMessage={errorMessage}
       btnText='로그인'
     >
-      <SignInputField
+      <AuthInputField
         title='아이디'
         htmlFor='email'
+        errorMessage={errors.email?.message}
       >
-        <SignInput
-          type='text'
-          id='email'
-          value={email}
-          placeholder='이메일을 입력해 주세요'
-          onChange={e => setEmail(e.target.value)}
-          autoComplete='email'
+        <Controller
+          name='email'
+          control={control}
+          rules={{ required: '* 이메일을 입력해 주세요' }}
+          render={({ field }) => (
+            <AuthInput
+              type='email'
+              {...field}
+              id={field.name}
+              placeholder='이메일을 입력해 주세요'
+              onChange={e => field.onChange(e.target.value)}
+              autoComplete='email'
+            />
+          )}
         />
-      </SignInputField>
-      <SignInputField
+      </AuthInputField>
+      <AuthInputField
         title='비밀번호'
         htmlFor='password'
+        errorMessage={errors.password?.message}
       >
-        <SignInput
-          type='password'
-          id='password'
-          value={password}
-          placeholder='비밀번호을 입력해 주세요'
-          onChange={e => setPassword(e.target.value)}
-          autoComplete='current-password'
+        <Controller
+          name='password'
+          control={control}
+          rules={{ required: '* 비밀번호를 입력해 주세요' }}
+          render={({ field }) => (
+            <AuthInput
+              type='password'
+              {...field}
+              id={field.name}
+              placeholder='비밀번호를 입력해 주세요'
+              onChange={e => field.onChange(e.target.value)}
+              autoComplete='current-password'
+            />
+          )}
         />
-      </SignInputField>
-    </SignContainer>
+      </AuthInputField>
+    </AuthContainer>
   );
 }
 
