@@ -1,19 +1,23 @@
 import { useEffect } from 'react';
 import { Controller, useFormContext, useWatch } from 'react-hook-form';
-import AuthInputField from '../../auth/form/AuthInputField';
-import AuthInput from '../../auth/form/AuthInput';
-import AuthSelect from '../../auth/form/AuthSelect';
+import AuthInputField from '../../../common/auth/AuthInputField';
+import AuthInput from '../../../common/auth/AuthInput';
+import AuthSelect from '../../../common/auth/AuthSelect';
 
-function SUInfoBasic({ isGoogleUser }: { isGoogleUser: boolean }) {
+function SUInfoBasic({ emailSignUp }: { emailSignUp: boolean }) {
   const {
     control,
     formState: { errors },
     trigger,
   } = useFormContext();
 
-  const yearOptions = Array.from({ length: 70 }, (_, i) => ({ value: `${i + 1955}년`, label: `${i + 1955}년` }));
-  const monthOptions = Array.from({ length: 12 }, (_, i) => ({ value: `${i + 1}월`, label: `${i + 1}월` }));
-  const dayOptions = Array.from({ length: 31 }, (_, i) => ({ value: `${i + 1}일`, label: `${i + 1}일` }));
+  const currentYear = new Date().getFullYear();
+  const yearOptions = Array.from({ length: currentYear - 1899 }, (_, i) => ({
+    value: `${currentYear - i}년`,
+    label: `${currentYear - i}년`,
+  }));
+  const monthOptions = Array.from({ length: 12 }, (_, i) => ({ value: `${1 + i}월`, label: `${1 + i}월` }));
+  const dayOptions = Array.from({ length: 31 }, (_, i) => ({ value: `${1 + i}일`, label: `${1 + i}일` }));
 
   // 값 감지
   const [emailValue, passwordValue, nameValue] = useWatch({
@@ -40,7 +44,7 @@ function SUInfoBasic({ isGoogleUser }: { isGoogleUser: boolean }) {
           name='email'
           control={control}
           rules={{
-            required: '* 이메일을 입력해 주세요',
+            required: '* 이메일을 입력해 주세요.',
             pattern: {
               value: /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/,
               message: '* 유효한 이메일 주소를 입력하세요.',
@@ -54,14 +58,14 @@ function SUInfoBasic({ isGoogleUser }: { isGoogleUser: boolean }) {
               placeholder='이메일을 입력해 주세요'
               onChange={e => field.onChange(e.target.value)}
               autoComplete='email'
-              disabled={isGoogleUser}
+              disabled={!emailSignUp}
             />
           )}
         />
       </AuthInputField>
 
       {/* 비밀번호 */}
-      {!isGoogleUser && (
+      {emailSignUp && (
         <AuthInputField
           title='비밀번호'
           htmlFor='password'
@@ -71,7 +75,7 @@ function SUInfoBasic({ isGoogleUser }: { isGoogleUser: boolean }) {
             name='password'
             control={control}
             rules={{
-              required: '* 비밀번호를 입력해 주세요',
+              required: '* 비밀번호를 입력해 주세요.',
               minLength: {
                 value: 8,
                 message: '* 비밀번호는 최소 8자 이상이어야 합니다.',
@@ -109,7 +113,7 @@ function SUInfoBasic({ isGoogleUser }: { isGoogleUser: boolean }) {
           name='name'
           control={control}
           rules={{
-            required: '* 이름을 입력해 주세요',
+            required: '* 이름을 입력해 주세요.',
             minLength: {
               value: 2,
               message: '* 이름은 최소 2자 이상이어야 합니다.',
@@ -144,7 +148,7 @@ function SUInfoBasic({ isGoogleUser }: { isGoogleUser: boolean }) {
         <Controller
           name='gender'
           control={control}
-          rules={{ required: '* 성별을 선택해 주세요' }}
+          rules={{ required: '* 성별을 선택해 주세요.' }}
           render={({ field }) => (
             <AuthSelect
               {...field}

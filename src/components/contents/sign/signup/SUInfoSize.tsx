@@ -1,13 +1,23 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Controller, useFormContext } from 'react-hook-form';
-import AuthInputField from '../../auth/form/AuthInputField';
-import AuthSelectButton from '../../auth/form/AuthSelectButton';
-import AuthSelect from '../../auth/form/AuthSelect';
-import { infoIcon } from '../../../../assets/icons/icons';
+import { useMemo } from 'react';
+import { Controller, useFormContext, useWatch } from 'react-hook-form';
+import AuthInputField from '../../../common/auth/AuthInputField';
+import AuthSelectButton from '../../../common/auth/AuthSelectButton';
+import AuthSelect from '../../../common/auth/AuthSelect';
+import InfoMessage from '../../../common/InfoMessage';
 
-function SUInfoSize() {
-  const { control, setValue } = useFormContext();
-  const [sizeType, setSizeType] = useState('');
+function SUInfoSize({ edit }: { edit?: boolean }) {
+  const {
+    control,
+    setValue,
+    formState: { errors, submitCount },
+    trigger,
+    clearErrors,
+  } = useFormContext();
+
+  const sizeTypeValue = useWatch({
+    control,
+    name: 'sizeType',
+  });
 
   const sizeData = [
     {
@@ -28,7 +38,7 @@ function SUInfoSize() {
   ];
 
   const sizeOptions = useMemo(() => {
-    const sizeTypeData = sizeData.find(data => data.type === sizeType);
+    const sizeTypeData = sizeData.find(data => data.type === sizeTypeValue);
     if (!sizeTypeData) return [];
 
     const { type, size, gap } = sizeTypeData;
@@ -39,30 +49,49 @@ function SUInfoSize() {
     });
 
     return sizeOptions;
-  }, [sizeType]);
+  }, [sizeTypeValue]);
 
-  useEffect(() => {
+  const handleSizeTypeClick = (type: string, handleClick: (...event: any[]) => void) => {
+    handleClick(type);
+    clearErrors('sizeType');
     setValue('size', '');
-  }, [sizeType]);
+    if (submitCount > 0) trigger('size');
+  };
+
+  const handleSizeFocus = async () => {
+    if (!sizeTypeValue) await trigger('sizeType');
+  };
 
   return (
     <>
-      <AuthInputField title='사이즈 타입'>
-        <div className='w-full flex gap-2'>
-          {['mm', 'EU', 'US'].map(type => (
-            <AuthSelectButton
-              key={type}
-              isActive={sizeType === type}
-              onClick={() => setSizeType(type)}
-            >
-              {type}
-            </AuthSelectButton>
-          ))}
-        </div>
+      <AuthInputField
+        title='사이즈 타입'
+        htmlFor='sizeType'
+        errorMessage={errors.sizeType?.message as string}
+      >
+        <Controller
+          name='sizeType'
+          control={control}
+          rules={{ required: '* 사이즈 타입을 선택해 주세요.' }}
+          render={({ field }) => (
+            <div className='w-full flex gap-2'>
+              {['mm', 'EU', 'US'].map(type => (
+                <AuthSelectButton
+                  key={type}
+                  isActive={field.value === type}
+                  onClick={() => handleSizeTypeClick(type, field.onChange)}
+                >
+                  {type}
+                </AuthSelectButton>
+              ))}
+            </div>
+          )}
+        />
       </AuthInputField>
       <AuthInputField
         title='평소 신는 스니커즈 사이즈'
         htmlFor='size'
+        errorMessage={errors.size?.message as string}
       >
         <Controller
           name='size'
@@ -75,20 +104,17 @@ function SUInfoSize() {
               options={sizeOptions}
               placeholder='사이즈를 선택해 주세요'
               fieldChange={field.onChange}
+              onFocus={handleSizeFocus}
             />
           )}
         />
       </AuthInputField>
-      <div className='w-full p-4 flex gap-2 rounded-lg bg-blue-50'>
-        <img
-          src={infoIcon}
-          alt='Infomation'
-          className='w-6 h-6'
-        />
-        <div className='text-base text-blue-700'>
+
+      {!edit && (
+        <InfoMessage>
           나에게 편한 신발 사이즈를 고려해서 추천사이즈를 알려드리기 위해 평소 신는 스니커즈 사이즈를 받고 있어요.
-        </div>
-      </div>
+        </InfoMessage>
+      )}
     </>
   );
 }

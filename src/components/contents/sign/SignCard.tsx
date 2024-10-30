@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
 import { auth } from '../../../service/firebase';
 import { useSignStore } from '../../../stores/sign.store';
-import { getUser } from '../../../api/firebase/getUser';
+import { useUserStore } from '../../../stores/user.store';
 import SignIn from '../../../pages/sign/SignIn';
 import SignUp from '../../../pages/sign/SignUp';
 import SignCardBtn from './SignCardBtn';
@@ -11,6 +11,7 @@ import { googleLogo } from '../../../assets/images/images';
 const SignCard = () => {
   const navigate = useNavigate();
   const { setGoogleUser, setSignSheetOpen, setSignSheetBody } = useSignStore();
+  const { fetchUserInfo } = useUserStore();
 
   // 이메일 로그인
   const signInEmail = () => {
@@ -41,7 +42,7 @@ const SignCard = () => {
         profile: user.photoURL || '',
       });
 
-      const userData = await getUser(user.uid);
+      const userData = await fetchUserInfo(user.uid);
       if (userData) navigate('/chat?mode=start');
       else {
         await signOut(auth);

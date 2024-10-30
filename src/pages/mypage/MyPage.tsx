@@ -3,9 +3,9 @@
 // 프로필 사진 변경
 // 고객센터 link 변경
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuthStore } from '../../stores/auth.store';
+import { auth } from '../../service/firebase';
 import { useUserStore } from '../../stores/user.store';
 import HeaderLayout from '../../layout/HeaderLayout';
 import MPLinkButton from '../../components/contents/mypage/MPLinkButton';
@@ -13,14 +13,15 @@ import { cameraMiniIcon, heartLineIcon, smileIcon, userBorderIcon } from '../../
 
 function MyPage() {
   const navigate = useNavigate();
-  const { uid } = useAuthStore();
-  const { user, fetchUserInfo } = useUserStore();
-
-  const editUserImg = () => {};
+  const currentUser = auth.currentUser;
+  const { user } = useUserStore();
+  const [isEmailUser, setIsEmailUser] = useState(false);
 
   useEffect(() => {
-    fetchUserInfo(uid);
-  });
+    if (currentUser?.providerData.some(provider => provider.providerId === 'password')) setIsEmailUser(true);
+  }, [currentUser]);
+
+  const editUserImg = () => {};
 
   return (
     <HeaderLayout back>
@@ -30,7 +31,7 @@ function MyPage() {
           <div className='flex flex-col justify-center items-center'>
             <div className='relative w-20 h-20'>
               <img
-                src={userBorderIcon}
+                src={user?.profile || userBorderIcon}
                 alt='User profile'
                 className='w-full h-full object-cover rounded-full overflow-hidden'
               />
@@ -119,15 +120,17 @@ function MyPage() {
               imgAlt='Edit my infomation'
               link='/account/settings/profile'
             />
-            <MPLinkButton
-              title='비밀번호 변경'
-              imgAlt='Change password'
-              link='/account/settings/password'
-            />
+            {isEmailUser && (
+              <MPLinkButton
+                title='비밀번호 변경'
+                imgAlt='Change password'
+                link='/account/settings/password'
+              />
+            )}
             <MPLinkButton
               title='고객센터'
               imgAlt='Customer service'
-              link='/'
+              link='/mypage'
             />
           </div>
         </div>

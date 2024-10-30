@@ -1,6 +1,6 @@
 import { forwardRef } from 'react';
 import Select, { Props } from 'react-select';
-import { selectStyles } from '../../../../styles/selectStyles';
+import { selectStyles } from '../../../styles/selectStyles';
 
 type TAuthSelectProps = {
   fieldChange?: (value: string) => void;

@@ -15,14 +15,13 @@ import SRShoeRack from '../../components/contents/shoerack/SRShoeRack';
 import { plusCircleIcon, userIcon } from '../../assets/icons/icons';
 
 function ShoeRack() {
-  const { uid } = useAuthStore();
-  const { user, fetchUserInfo } = useUserStore();
+  const { uid, isLoading } = useAuthStore();
+  const { user } = useUserStore();
   const { shoeRack, fetchShoeRack } = useShoeRackStore();
 
   useEffect(() => {
-    fetchUserInfo(uid);
-    fetchShoeRack(uid);
-  }, [uid]);
+    if (!isLoading) fetchShoeRack(uid);
+  }, [isLoading, user]);
 
   const editUserImg = () => {};
 

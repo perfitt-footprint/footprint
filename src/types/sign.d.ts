@@ -9,6 +9,7 @@ export type TUserInfo = {
   birthYear: string;
   birthMonth: string;
   birthDay: string;
+  sizeType: string;
   size: string;
   profile?: string;
 } & TUserInfoBasic;

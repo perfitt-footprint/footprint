@@ -8,8 +8,10 @@ const SignCardBtn = (props: TSignCardBtnProps) => {
 
   return (
     <button
-      className={`w-full h-[32px] flex justify-center items-center gap-2
-        rounded bg-[#F5F5F5] text-sm ${className}`}
+      type='button'
+      className={`w-full flex justify-center items-center gap-2 rounded bg-[#F5F5F5] text-sm
+        ${image ? 'p-1' : 'p-1.5'}
+        ${className}`}
       {...rest}
     >
       {image && (

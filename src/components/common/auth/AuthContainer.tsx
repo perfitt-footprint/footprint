@@ -1,8 +1,8 @@
 import { ReactNode } from 'react';
 import { useLocation } from 'react-router-dom';
 import { FormProvider, UseFormReturn } from 'react-hook-form';
-import Header from '../../../common/Header';
-import Button from '../../../common/Button';
+import Header from '../Header';
+import Button from '../Button';
 import AuthErrorMessage from './AuthErrorMessage';
 
 type TAuthContainerProps = {
@@ -11,11 +11,12 @@ type TAuthContainerProps = {
   formClassName?: string;
   handleSubmit: (e: React.FormEvent) => Promise<void>;
   children: ReactNode;
+  errorField?: boolean;
   errorMessage?: string;
   btnText: string;
 };
 
-const AuthContainer = (props: TAuthContainerProps) => {
+const AuthContainer = ({ errorField = true, ...props }: TAuthContainerProps) => {
   const { title, methods, formClassName, handleSubmit, children, errorMessage, btnText } = props;
   const location = useLocation();
   const isChat = location.pathname === '/chat';
@@ -35,10 +36,12 @@ const AuthContainer = (props: TAuthContainerProps) => {
             {children}
           </div>
           <div className='px-1'>
-            <AuthErrorMessage
-              className='h-6 text-center'
-              message={errorMessage}
-            />
+            {errorField && (
+              <AuthErrorMessage
+                className='h-6 text-center'
+                message={errorMessage}
+              />
+            )}
             <Button type='submit'>{btnText}</Button>
           </div>
         </form>
