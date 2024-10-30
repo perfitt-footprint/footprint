@@ -1,9 +1,9 @@
 // 개인정보 수정 / 비밀번호 변경 / 회원탈퇴
 
 import { useNavigate, useParams } from 'react-router-dom';
-import ASProfile from '../components/contents/auth/ASProfile';
-import ASPassword from '../components/contents/auth/ASPassword';
-import ASDelete from '../components/contents/auth/ASDelete';
+import ASProfile from './ASProfile';
+import ASPassword from './ASPassword';
+import ASDelete from './ASDelete';
 
 function AccountSettings() {
   const navigate = useNavigate();

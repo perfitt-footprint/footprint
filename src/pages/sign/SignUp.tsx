@@ -11,15 +11,16 @@ import { useForm } from 'react-hook-form';
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithCredential, updateProfile } from 'firebase/auth';
 import { auth } from '../../service/firebase';
 import { TUserInfo } from '../../types/sign';
+import { useUserStore } from '../../stores/user.store';
 import { useSignStore } from '../../stores/sign.store';
-import { createUser } from '../../api/firebase/createUser';
-import AuthContainer from '../../components/contents/auth/form/AuthContainer';
+import AuthContainer from '../../components/common/auth/AuthContainer';
 import SUInfoBasic from '../../components/contents/sign/signup/SUInfoBasic';
 import SUInfoSize from '../../components/contents/sign/signup/SUInfoSize';
 
 function SignUp() {
   const navigate = useNavigate();
   const [step, setStep] = useState<'basic' | 'size'>('basic');
+  const { upsertUserInfo } = useUserStore();
   const [googleAuth, setGoogleAuth] = useState({
     uid: '',
     token: '',
@@ -35,12 +36,10 @@ function SignUp() {
       birthYear: '',
       birthMonth: '',
       birthDay: '',
+      sizeType: '',
       size: '',
     },
   });
-  const {
-    formState: { errors },
-  } = methods;
 
   // 구글 회원가입, 기본 정보 가져오기
   useEffect(() => {
@@ -56,7 +55,7 @@ function SignUp() {
   // 회원가입, firestore User DB 저장
   const signUp = async (uid: string, data: TUserInfo) => {
     try {
-      const result = await createUser(uid, data);
+      const result = await upsertUserInfo(uid, data);
       if (result === 'success') {
         setSignSheetOpen(false);
         setSignSheetBody(undefined);
@@ -70,19 +69,8 @@ function SignUp() {
 
   // Click Button
   const handleSubmit = async (data: TUserInfo) => {
-    if (step === 'basic') {
-      // 1. step = basic, 이메일 중복 검사
-      // const signInMethods = await fetchSignInMethodsForEmail(auth, data.email);
-      // if (signInMethods.length === 0) {
-      setStep('size');
-      // } else {
-      //   methods.setError('email', {
-      //     type: 'manual',
-      //     message: '* 해당 이메일은 이미 등록되어 있습니다.',
-      //   });
-      // }
-    } else {
-      // 2. step = size, 회원가입
+    if (step === 'basic') setStep('size');
+    else {
       try {
         if (!googleAuth.uid) {
           // 이메일 회원가입
@@ -112,9 +100,8 @@ function SignUp() {
       handleSubmit={methods.handleSubmit(handleSubmit)}
       btnText={step === 'basic' ? '다음' : '가입 완료'}
       formClassName={step === 'size' ? 'gap-6' : ''}
-      errorMessage={step === 'size' ? (errors.size?.message as string) : undefined}
     >
-      {step === 'basic' && <SUInfoBasic isGoogleUser={!!googleAuth.uid} />}
+      {step === 'basic' && <SUInfoBasic emailSignUp={!googleAuth.uid} />}
       {step === 'size' && <SUInfoSize />}
     </AuthContainer>
   );

@@ -6,14 +6,16 @@ import { Controller, useForm } from 'react-hook-form';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../service/firebase';
 import { useSignStore } from '../../stores/sign.store';
+import { useUserStore } from '../../stores/user.store';
 import { TUserInfoBasic } from '../../types/sign';
-import AuthContainer from '../../components/contents/auth/form/AuthContainer';
-import AuthInputField from '../../components/contents/auth/form/AuthInputField';
-import AuthInput from '../../components/contents/auth/form/AuthInput';
+import AuthContainer from '../../components/common/auth/AuthContainer';
+import AuthInputField from '../../components/common/auth/AuthInputField';
+import AuthInput from '../../components/common/auth/AuthInput';
 
 function SignIn() {
   const navigate = useNavigate();
   const { setSignSheetOpen } = useSignStore();
+  const { fetchUserInfo } = useUserStore();
   const methods = useForm<TUserInfoBasic>({
     defaultValues: {
       email: '',
@@ -32,6 +34,7 @@ function SignIn() {
       const userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
       const user = userCredential.user;
       if (user) {
+        fetchUserInfo(user.uid);
         setSignSheetOpen(false);
         navigate('/chat?mode=start');
       }
@@ -74,7 +77,7 @@ function SignIn() {
         <Controller
           name='email'
           control={control}
-          rules={{ required: '* 이메일을 입력해 주세요' }}
+          rules={{ required: '* 이메일을 입력해 주세요.' }}
           render={({ field }) => (
             <AuthInput
               type='email'
@@ -95,7 +98,7 @@ function SignIn() {
         <Controller
           name='password'
           control={control}
-          rules={{ required: '* 비밀번호를 입력해 주세요' }}
+          rules={{ required: '* 비밀번호를 입력해 주세요.' }}
           render={({ field }) => (
             <AuthInput
               type='password'

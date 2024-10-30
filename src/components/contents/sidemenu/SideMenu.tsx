@@ -12,10 +12,10 @@ import { auth } from '../../../service/firebase';
 import { TChat } from '../../../types/db';
 import { useAuthStore } from '../../../stores/auth.store';
 import { useUserStore } from '../../../stores/user.store';
-import SMChatList from './SMChatList';
-import { menuIcon, plusIcon, userIcon } from '../../../assets/icons/icons';
 import { getUserChat } from '../../../api/firebase/getUserChat';
 import { getChat } from '../../../api/firebase/getChat';
+import SMChatList from './SMChatList';
+import { menuIcon, plusIcon, userIcon } from '../../../assets/icons/icons';
 
 type TSideMenuProps = {
   isMenuOpen: boolean;
@@ -29,10 +29,10 @@ const SideMenu = ({ isMenuOpen, toggleMenu }: TSideMenuProps) => {
 
   useEffect(() => {
     if (!isLoading && uid) {
-      fetchUserInfo(uid);
+      if (!user) fetchUserInfo(uid);
       getChatList();
     }
-  }, [isLoading, window.location.href]);
+  }, [window.location.href, isLoading, user]);
 
   // 채팅 리스트 가져오기
   const getChatList = async () => {
